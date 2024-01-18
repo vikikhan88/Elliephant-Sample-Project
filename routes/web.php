@@ -12,15 +12,45 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
 Auth::routes();
 
 Route::get('/', function () {
     return view('auth/login');
 });
 
-Route::get('/products', function () {
-    return view('pages/products/productsList');
+/*
+|=================
+| BACKEND ROUTES
+|=================
+*/
+Route::group([
+    'prefix' => 'admin',
+    'middleware' => ['auth']
+], function () {
+    Route::get('/dashboard', 'DashboardController@index');
+    Route::group([
+        'prefix' => 'products',
+    ], function () {
+        Route::get('/', 'ProductsController@index');
+        Route::get('/edit/{sku}', 'ProductsController@index');
+    });
+
+    Route::get('/users', 'AdminUsersController@index');
 });
-Route::get('/products/details/{code}', function () {
-    return view('pages/products/productDetails');
+
+/*
+|=================
+| FRONTEND ROUTES
+|=================
+*/
+Route::group([
+    'prefix' => 'products',
+], function () {
+    Route::get('/', function () {
+        return view('pages/products/productsList');
+    });
+    Route::get('/details/{sku}', function () {
+        return view('pages/products/productDetails');
+    });
 });
