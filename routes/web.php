@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\AuthController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,44 +13,30 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Auth::routes();
 
-Route::get('/', function () {
-    return view('auth/login');
-});
+Route::get('/', [AuthController::class, 'index']);
+Route::post('/', [AuthController::class, 'login']);
 
-/*
-|=================
-| BACKEND ROUTES
-|=================
-*/
 Route::group([
     'prefix' => 'admin',
     'middleware' => ['auth']
 ], function () {
+
     Route::get('/dashboard', 'DashboardController@index');
+
+    Route::get('/users', 'AdminUsersController@index');
+
     Route::group([
         'prefix' => 'products',
     ], function () {
         Route::get('/', 'ProductsController@index');
-        Route::get('/edit/{sku}', 'ProductsController@index');
-    });
-
-    Route::get('/users', 'AdminUsersController@index');
-});
-
-/*
-|=================
-| FRONTEND ROUTES
-|=================
-*/
-Route::group([
-    'prefix' => 'products',
-], function () {
-    Route::get('/', function () {
-        return view('pages/products/productsList');
-    });
-    Route::get('/details/{sku}', function () {
-        return view('pages/products/productDetails');
+        Route::post('/add', 'ProductsController@index');
+        Route::put('/update/{sku}', 'ProductsController@index');
+        Route::delete('/remove/{sku}', 'ProductsController@index');
     });
 });
+
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
