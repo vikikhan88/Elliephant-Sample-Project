@@ -1,13 +1,7 @@
-<!doctype html>
-<html class="h-full bg-white">
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    @vite('resources/css/app.css')
-</head>
+@extends('layouts.app')
 
-<body class="h-full">
+@section('content')
     <div class="bg-white">
         <div class="pt-6">
             <nav aria-label="Breadcrumb">
@@ -40,33 +34,41 @@
             </nav>
 
             <!-- Image gallery -->
+
+
             <div class="mx-auto mt-6 max-w-2xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:gap-x-8 lg:px-8">
+            @foreach ( $product->gallery_image  as $key => $image)
+                @if($key == 'image1')
                 <div class="aspect-h-4 aspect-w-3 hidden overflow-hidden rounded-lg lg:block">
-                    <img src="https://tailwindui.com/img/ecommerce-images/product-page-02-secondary-product-shot.jpg"
+                    <img src="{{ $image }}"
                         alt="Two each of gray, white, and black shirts laying flat."
                         class="h-full w-full object-cover object-center">
                 </div>
+                @elseif ($key == 'image2')
                 <div class="hidden lg:grid lg:grid-cols-1 lg:gap-y-8">
                     <div class="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg">
-                        <img src="https://tailwindui.com/img/ecommerce-images/product-page-02-tertiary-product-shot-01.jpg"
+                        <img src="{{ $image }}"
                             alt="Model wearing plain black basic tee." class="h-full w-full object-cover object-center">
                     </div>
                     <div class="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg">
-                        <img src="https://tailwindui.com/img/ecommerce-images/product-page-02-tertiary-product-shot-02.jpg"
+                        <img src="{{ $image }}"
                             alt="Model wearing plain gray basic tee." class="h-full w-full object-cover object-center">
                     </div>
                 </div>
+                @elseif ($key == 'image4')
                 <div class="aspect-h-5 aspect-w-4 lg:aspect-h-4 lg:aspect-w-3 sm:overflow-hidden sm:rounded-lg">
-                    <img src="https://tailwindui.com/img/ecommerce-images/product-page-02-featured-product-shot.jpg"
+                    <img src="{{ $image }}"
                         alt="Model wearing plain white basic tee." class="h-full w-full object-cover object-center">
                 </div>
+                @endif
+            @endforeach
             </div>
 
             <!-- Product info -->
             <div
                 class="mx-auto max-w-2xl px-4 pb-16 pt-10 sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:grid-rows-[auto,auto,1fr] lg:gap-x-8 lg:px-8 lg:pb-24 lg:pt-16">
                 <div class="lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8">
-                    <h1 class="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">Basic Tee 6-Pack</h1>
+                    <h1 class="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{{ $product->name }}</h1>
                 </div>
 
                 <!-- Options -->
@@ -287,9 +289,8 @@
                             </fieldset>
                         </div>
 
-                        <button type="submit"
-                            class="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Add
-                            to bag</button>
+                        <a href="/products/{{$product->id}}/edit"
+                            class="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Edit</a>
                     </form>
                 </div>
 
@@ -300,10 +301,7 @@
                         <h3 class="sr-only">Description</h3>
 
                         <div class="space-y-6">
-                            <p class="text-base text-gray-900">The Basic Tee 6-Pack allows you to fully express your
-                                vibrant personality with three grayscale options. Feeling adventurous? Put on a heather
-                                gray tee. Want to be a trendsetter? Try our exclusive colorway: &quot;Black&quot;. Need
-                                to add an extra pop of color to your outfit? Our white tee has you covered.</p>
+                            <p class="text-base text-gray-900">{{ $product->description }}</p>
                         </div>
                     </div>
 
@@ -339,4 +337,4 @@
     </div>
 </body>
 
-</html>
+@endsection

@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\c;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade as PDF;
-
+use App\Models\Products;
 class ProductController extends Controller
 {
     /**
@@ -13,7 +12,9 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        $viewData = [];
+        $viewData['products']  = Products::all();
+        return view('products.productsList',$viewData);
     }
 
     /**
@@ -21,7 +22,8 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        $viewData = [];
+        return view('products.productsAdd',$viewData);
     }
 
     /**
@@ -30,28 +32,38 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         //
+        $viewData = [];
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(c $c)
+    public function show(Request $request, $id)
     {
         //
+        $viewData = [];
+        $product  = Products::where("id", "=" , $id)->first();
+        $product->gallery_image = json_decode($product->gallery_image);
+        $viewData['product']= $product;
+        return view('products.productDetails',$viewData);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(c $c)
+    public function edit(Request $request, $id)
     {
         //
+        $viewData = [];
+        $product  = Products::where("id", "=" , $id)->first();
+
+        return view('products.productEdit',$viewData);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, c $c)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -59,7 +71,7 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(c $c)
+    public function destroy(Request $request)
     {
         //
     }
@@ -68,7 +80,7 @@ class ProductController extends Controller
 
     public function generatePdf($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Products::findOrFail($id);
 
         $pdf = PDF::loadView('products.pdf', compact('product'));
 
