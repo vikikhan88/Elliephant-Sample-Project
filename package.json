@@ -1,4 +1,11 @@
 {
+    "package-name": "",
+    "version": "",
+    "description": "",
+    "keywords": "",
+    "author": "",
+    "license": "",
+
     "private": true,
     "type": "module",
     "scripts": {
