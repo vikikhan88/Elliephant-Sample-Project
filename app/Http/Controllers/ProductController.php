@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade as PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Products;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
 class ProductController extends Controller
 {
     /**
@@ -14,7 +17,7 @@ class ProductController extends Controller
     {
         $viewData = [];
         $viewData['products']  = Products::all();
-        return view('products.productsList',$viewData);
+        return view('products.productsList', $viewData);
     }
 
     /**
@@ -23,7 +26,7 @@ class ProductController extends Controller
     public function create()
     {
         $viewData = [];
-        return view('products.productsAdd',$viewData);
+        return view('products.productAdd', $viewData);
     }
 
     /**
@@ -33,6 +36,31 @@ class ProductController extends Controller
     {
         //
         $viewData = [];
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:255',
+            'description' => 'required',
+            'price' => 'required',
+            'shipping_cost' => 'required',
+            'product_status' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect('/products/create')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $result = Products::insert(
+            [
+                "name" => $request->input('name'),
+                "description" => $request->input('description'),
+                "price" => $request->input('price'),
+                "shipping_cost" => $request->input('shipping_cost'),
+                "product_status" => $request->input('product_status'),
+            ]
+        );
+
+        return redirect()->route('products.index')->withSuccess('New Product is Created!');
     }
 
     /**
@@ -42,10 +70,10 @@ class ProductController extends Controller
     {
         //
         $viewData = [];
-        $product  = Products::where("id", "=" , $id)->first();
+        $product  = Products::where("id", "=", $id)->first();
         $product->gallery_image = json_decode($product->gallery_image);
-        $viewData['product']= $product;
-        return view('products.productDetails',$viewData);
+        $viewData['product'] = $product;
+        return view('products.productDetails', $viewData);
     }
 
     /**
@@ -55,9 +83,11 @@ class ProductController extends Controller
     {
         //
         $viewData = [];
-        $product  = Products::where("id", "=" , $id)->first();
+        $product  = Products::where("id", "=", $id)->first();
+        $product->gallery_image = json_decode($product->gallery_image);
+        $viewData['product'] = $product;
 
-        return view('products.productEdit',$viewData);
+        return view('products.productEdit', $viewData);
     }
 
     /**
@@ -66,14 +96,41 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:255',
+            'description' => 'required',
+            'price' => 'required',
+            'shipping_cost' => 'required',
+            'product_status' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect('/products/' . $id . '/edit')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $result = Products::whereId($id)->update(
+            [
+                "name" => $request->input('name'),
+                "description" => $request->input('description'),
+                "price" => $request->input('price'),
+                "shipping_cost" => $request->input('shipping_cost'),
+                "product_status" => $request->input('product_status'),
+            ]
+        );
+        return redirect('/products/' . $id . '/edit')->withSuccess('IT WORKS!');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request)
+    public function destroy(Request $request, $id)
     {
         //
+        Products::find($id)->delete();
+
+        return redirect()->route('products.index')->withSuccess('Product is removed!');
     }
 
 
@@ -81,8 +138,10 @@ class ProductController extends Controller
     public function generatePdf($id)
     {
         $product = Products::findOrFail($id);
+        $product->gallery_image = json_decode($product->gallery_image);
+        $viewData['product'] = $product;
 
-        $pdf = PDF::loadView('products.pdf', compact('product'));
+        $pdf = PDF::loadView('products.pdf', compact('product'))->setPaper('a4', 'portrait');
 
         return $pdf->download('product.pdf');
     }

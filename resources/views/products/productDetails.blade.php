@@ -33,10 +33,40 @@
                 </ol>
             </nav>
 
-            <!-- Image gallery -->
-
-
+            <!-- Alerts -->
+            @if (session()->has('success'))
+                    <div class="flex items-center p-4 mb-4 text-sm text-green-800 border border-green-300 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400 dark:border-green-800" role="alert">
+                        <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                        </svg>
+                        <span class="sr-only">Info</span>
+                        <div>
+                            <span class="font-medium">Success alert! </span> {{session('success')}}.
+                        </div>
+                    </div>
+            @endif
+            @if ($errors->any())
+                <div class="flex p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+                    role="alert">
+                    <svg class="flex-shrink-0 inline w-4 h-4 me-3 mt-[2px]" aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                            d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                    </svg>
+                    <span class="sr-only">Danger</span>
+                    <div>
+                        <span class="font-medium">Ensure that these requirements are met:</span>
+                        <ul class="mt-1.5 list-disc list-inside">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            @endif
+                <!-- Image gallery -->
             <div class="mx-auto mt-6 max-w-2xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:gap-x-8 lg:px-8">
+            @if($product->gallery_image)
             @foreach ( $product->gallery_image  as $key => $image)
                 @if($key == 'image1')
                 <div class="aspect-h-4 aspect-w-3 hidden overflow-hidden rounded-lg lg:block">
@@ -61,7 +91,8 @@
                         alt="Model wearing plain white basic tee." class="h-full w-full object-cover object-center">
                 </div>
                 @endif
-            @endforeach
+                @endforeach
+            @endif
             </div>
 
             <!-- Product info -->
@@ -119,7 +150,7 @@
                         </div>
                     </div>
 
-                    <form class="mt-10">
+                    <div class="mt-10">
                         <!-- Colors -->
                         <div>
                             <h3 class="text-sm font-medium text-gray-900">Color</h3>
@@ -289,9 +320,17 @@
                             </fieldset>
                         </div>
 
+                        <a href="/products/pdf-create/{{ $product->id}}"
+                        class="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-green:outline-indigo-600">Create PDF Report</a>
+
                         <a href="/products/{{$product->id}}/edit"
                             class="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Edit</a>
-                    </form>
+                        <form method="post" action="/products/{{$product->id}}">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-red-600 px-8 py-3 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">delete</button>
+                        </form>
+                    </div>
                 </div>
 
                 <div

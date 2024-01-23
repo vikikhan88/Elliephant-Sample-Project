@@ -15,7 +15,8 @@ use App\Http\Controllers\ProductController;
 Auth::routes();
 
 Route::get('/', function(){
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 Route::resource('products', ProductController::class)->middleware('auth');
+Route::get('/products/pdf-create/{id}', [ProductController::class, 'generatePdf'])->middleware('auth');
